@@ -87,7 +87,7 @@ export default function RestaurantList({ restaurant }: RestaurantItemProps) {
 const styles = StyleSheet.create({
   card: {
     flexDirection: "row",
-    marginHorizontal: spacing.md,
+    marginHorizontal: 0,
     marginVertical: spacing.sm,
     backgroundColor: colors.white,
     borderRadius: 12,
