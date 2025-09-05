@@ -36,7 +36,7 @@ export default function HomeScreen() {
   }, [restaurants]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.gray100 }}>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.gray100, paddingTop: spacing.lg}}>
       <Animated.FlatList
         data={listData}
         keyExtractor={(item) => item.key}
