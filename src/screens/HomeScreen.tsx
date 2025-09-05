@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import { View, Animated, StyleSheet, SafeAreaView, FlatList } from "react-native";
+import React, { useMemo, useRef } from "react";
+import { View, Animated, StyleSheet, SafeAreaView } from "react-native";
 import { colors, spacing } from "../theme";
 
 import Header from "../components/home/Header";
@@ -17,11 +17,29 @@ export default function HomeScreen() {
 
   const restaurants = mockData.restaurants;
 
+  type ListItem =
+    | { type: "whats"; key: string }
+    | { type: "filters"; key: string }
+    | { type: "restaurant"; key: string; restaurant: (typeof restaurants)[number] };
+
+  const listData: ListItem[] = useMemo(() => {
+    const headerItems: ListItem[] = [
+      { type: "whats", key: "whats" },
+      { type: "filters", key: "filters" },
+    ];
+    const restaurantItems: ListItem[] = restaurants.map((r) => ({
+      type: "restaurant",
+      key: `rest-${r.id}`,
+      restaurant: r,
+    }));
+    return [...headerItems, ...restaurantItems];
+  }, [restaurants]);
+
   return (
-    <SafeAreaView style={{ padding: 20, flex: 1, backgroundColor: colors.gray100 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.gray100 }}>
       <Animated.FlatList
-        data={restaurants}
-        keyExtractor={(item) => item.id}
+        data={listData}
+        keyExtractor={(item) => item.key}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
         onScroll={Animated.event(
@@ -35,23 +53,38 @@ export default function HomeScreen() {
             <VegToggle />
             <BannerCarousel />
             <CategoryList />
-            <WhatsOnYourMind />
-            <FiltersBar />
           </>
         }
-        stickyHeaderIndices={[5, 6]}
-        renderItem={({ item }) => <RestaurantList restaurant={item} />}
-        contentContainerStyle={{ paddingBottom: spacing.lg }}
+        stickyHeaderIndices={[1, 2]}
+        renderItem={({ item }) => {
+          if (item.type === "whats") {
+            return (
+              <View style={{ backgroundColor: colors.gray100 }}>
+                <WhatsOnYourMind />
+              </View>
+            );
+          }
+          if (item.type === "filters") {
+            return (
+              <View style={{ backgroundColor: colors.gray100 }}>
+                <FiltersBar />
+              </View>
+            );
+          }
+          return <RestaurantList restaurant={item.restaurant} />;
+        }}
+        contentContainerStyle={{
+          paddingBottom: spacing.lg,
+          paddingHorizontal: spacing.screenHorizontal,
+        }}
+        initialNumToRender={8}
+        windowSize={10}
+        maxToRenderPerBatch={8}
+        updateCellsBatchingPeriod={50}
+        removeClippedSubviews
       />
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  stickyWrapper: {
-    position: "absolute",
-    width: "100%",
-    zIndex: 10,
-    backgroundColor: colors.gray100,
-  },
-});
+const styles = StyleSheet.create({});

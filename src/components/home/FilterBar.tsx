@@ -42,7 +42,7 @@ export default function FiltersBar() {
     });
     const textColor = animatedValues[item.id].interpolate({
       inputRange: [0, 1],
-      outputRange: [colors.gray900, colors.secondary],
+      outputRange: [colors.gray900, colors.white],
     });
 
     return (
@@ -65,7 +65,7 @@ export default function FiltersBar() {
               <Icons.Ionicons
                 name="close"
                 size={16}
-                color={colors.secondary}
+                color={colors.white}
                 style={{ marginLeft: 4 }}
               />
             )}
@@ -91,10 +91,11 @@ export default function FiltersBar() {
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: spacing.sm,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.gray100,
   },
   listContent: {
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: 0,
   },
   pill: {
     paddingHorizontal: spacing.md,

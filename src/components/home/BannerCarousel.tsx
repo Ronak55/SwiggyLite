@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
   },
   bannerWrapper: {
-    width,
+    width: "100%",
   },
   bannerImage: {
     width: "100%",

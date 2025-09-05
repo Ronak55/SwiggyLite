@@ -40,17 +40,18 @@ export default function WhatsOnYourMind() {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: spacing.lg,
+    paddingTop: spacing.md,
+    backgroundColor: colors.gray100,
   },
   title: {
     ...typography.h2,
     color: colors.black,
-    marginHorizontal: spacing.md,
+    marginHorizontal: 0,
     marginBottom: spacing.sm,
     fontWeight: "600",
   },
   listContent: {
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: 0,
   },
   item: {
     width: IMAGE_SIZE,
