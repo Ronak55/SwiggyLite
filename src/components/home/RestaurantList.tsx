@@ -1,8 +1,7 @@
-import React, { useMemo, useRef } from "react";
+import React, { useRef } from "react";
 import {
   View,
   Text,
-  FlatList,
   StyleSheet,
   Animated,
   TouchableWithoutFeedback,
@@ -10,105 +9,82 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, typography, spacing } from "../../theme";
-import { mockData } from "../../data/mockData";
+
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 
 const CARD_HEIGHT = hp("15%");
 const IMAGE_WIDTH = wp("30%");
 
-export default function RestaurantList() {
-  const restaurants = useMemo(
-    () =>
-      mockData.restaurants.map((r) => ({
-        ...r,
-        ratingCount: Math.floor(Math.random() * 1000) + 10,
-      })),
-    []
-  );
+type RestaurantItemProps = {
+  restaurant: {
+    id: string;
+    name: string;
+    rating: string;
+    vegOnly: boolean;
+    etaMins: number;
+    distanceKm: string;
+    costForTwo: string;
+    cover: string;
+    cuisines: string[];
+    offer: string;
+    promoted: boolean;
+  };
+};
 
-  const renderItem = ({ item }: { item: typeof restaurants[0] }) => {
-    const scaleAnim = useRef(new Animated.Value(1)).current;
+export default function RestaurantList({ restaurant }: RestaurantItemProps) {
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
-    const onPressIn = () => {
-      Animated.spring(scaleAnim, {
-        toValue: 0.97,
-        useNativeDriver: true,
-      }).start();
-    };
+  const onPressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.97,
+      useNativeDriver: true,
+    }).start();
+  };
 
-    const onPressOut = () => {
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 4,
-        tension: 100,
-        useNativeDriver: true,
-      }).start();
-    };
-
-    return (
-      <TouchableWithoutFeedback onPressIn={onPressIn} onPressOut={onPressOut}>
-        <Animated.View style={[styles.card, { transform: [{ scale: scaleAnim }] }]}>
-          <Image
-            source={{ uri: item.cover }}
-            style={styles.image}
-            resizeMode="cover"
-          />
-          <View style={styles.content}>
-            <View style={styles.topRow}>
-              <Text style={styles.name} numberOfLines={1}>
-                {item.name}
-              </Text>
-              <Ionicons name="ellipsis-vertical" size={18} color={colors.gray500} />
-            </View>
-            <Text style={styles.subInfo}>
-              {item.rating} ({item.ratingCount}+) • {item.etaMins}-{item.etaMins + 5} mins
-            </Text>
-            <View style={styles.cuisinesRow}>
-              {item.vegOnly && <View style={styles.vegDot} />}
-              <Text style={styles.cuisines}>{item.cuisines.join(", ")}</Text>
-            </View>
-            {item.offer && (
-              <View style={styles.offerBadge}>
-                <Text style={styles.offerText}>{item.offer}</Text>
-              </View>
-            )}
-          </View>
-        </Animated.View>
-      </TouchableWithoutFeedback>
-    );
+  const onPressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      friction: 4,
+      tension: 100,
+      useNativeDriver: true,
+    }).start();
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <Text style={styles.totalText}>{restaurants.length} Restaurants to explore</Text>
-      <FlatList
-        data={restaurants}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: spacing.lg }}
-        initialNumToRender={6}
-        maxToRenderPerBatch={8}
-        windowSize={10}
-        removeClippedSubviews={true}
-        getItemLayout={(_, index) => ({
-          length: CARD_HEIGHT + spacing.sm * 2,
-          offset: (CARD_HEIGHT + spacing.sm * 2) * index,
-          index,
-        })}
-      />
-    </View>
+    <TouchableWithoutFeedback onPressIn={onPressIn} onPressOut={onPressOut}>
+      <Animated.View style={[styles.card, { transform: [{ scale: scaleAnim }] }]}>
+        <Image
+          source={{ uri: restaurant.cover }}
+          style={styles.image}
+          resizeMode="cover"
+        />
+        <View style={styles.content}>
+          <View style={styles.topRow}>
+            <Text style={styles.name} numberOfLines={1}>
+              {restaurant.name}
+            </Text>
+            <Ionicons name="ellipsis-vertical" size={18} color={colors.gray500} />
+          </View>
+          <Text style={styles.subInfo}>
+            {restaurant.rating} ({Math.floor(Math.random() * 1000) + 10}+) •{" "}
+            {restaurant.etaMins}-{restaurant.etaMins + 5} mins
+          </Text>
+          <View style={styles.cuisinesRow}>
+            {restaurant.vegOnly && <View style={styles.vegDot} />}
+            <Text style={styles.cuisines}>{restaurant.cuisines.join(", ")}</Text>
+          </View>
+          {restaurant.offer && (
+            <View style={styles.offerBadge}>
+              <Text style={styles.offerText}>{restaurant.offer}</Text>
+            </View>
+          )}
+        </View>
+      </Animated.View>
+    </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
-  totalText: {
-    ...typography.h2,
-    fontWeight: "600",
-    marginHorizontal: spacing.md,
-    marginVertical: spacing.sm,
-    color: colors.black,
-  },
   card: {
     flexDirection: "row",
     marginHorizontal: spacing.md,
