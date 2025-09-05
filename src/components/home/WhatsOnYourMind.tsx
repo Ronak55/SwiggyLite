@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.gray100,
   },
   title: {
-    ...typography.h2,
+    ...typography.body,
     color: colors.black,
     marginHorizontal: 0,
     marginBottom: spacing.sm,

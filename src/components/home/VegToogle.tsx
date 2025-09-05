@@ -23,7 +23,6 @@ export default function VegToggle() {
   return (
     <View style={styles.container}>
       <View style={styles.toggleBackground}>
-        {/* Animated active pill */}
         <Animated.View
           style={[
             styles.activePill,
@@ -42,7 +41,7 @@ export default function VegToggle() {
           onPress={() => handleToggle("veg")}
           activeOpacity={0.7}
         >
-          {renderDot("#008000")} {/* green */}
+          {renderDot("#008000")}
           <Text
             style={[
               styles.optionText,
@@ -52,14 +51,12 @@ export default function VegToggle() {
             Veg Only
           </Text>
         </TouchableOpacity>
-
-        {/* Non-Veg Option */}
         <TouchableOpacity
           style={styles.option}
           onPress={() => handleToggle("nonveg")}
           activeOpacity={0.7}
         >
-          {renderDot("#D32F2F")} {/* red */}
+          {renderDot("#D32F2F")}
           <Text
             style={[
               styles.optionText,

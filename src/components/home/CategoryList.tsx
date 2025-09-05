@@ -54,25 +54,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: spacing.sm,
   },
-  imageWrapper: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: colors.gray100,
-    justifyContent: "center",
-    alignItems: "center",
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOpacity: 0.1,
-        shadowOffset: { width: 0, height: 3 },
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 4,
-      },
-    }),
-  },
+ 
   image: {
     width: 64,
     height: 64,

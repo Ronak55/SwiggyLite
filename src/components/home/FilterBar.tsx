@@ -22,9 +22,10 @@ export default function FiltersBar() {
 
   const toggleFilter = (id: string) => {
     const isSelected = selectedFilters.includes(id);
+
     Animated.timing(animatedValues[id], {
       toValue: isSelected ? 0 : 1,
-      duration: 250,
+      duration: 200,
       useNativeDriver: false,
     }).start();
 
@@ -38,23 +39,40 @@ export default function FiltersBar() {
 
     const backgroundColor = animatedValues[item.id].interpolate({
       inputRange: [0, 1],
-      outputRange: [colors.gray100, colors.secondary],
+      outputRange: [colors.white, colors.primary],
+    });
+    const borderColor = animatedValues[item.id].interpolate({
+      inputRange: [0, 1],
+      outputRange: [colors.gray300, colors.primary],
     });
     const textColor = animatedValues[item.id].interpolate({
       inputRange: [0, 1],
       outputRange: [colors.gray900, colors.white],
     });
 
+    const renderFilterButton = () => (
+    <View style={{ marginRight: spacing.sm }}>
+      <TouchableOpacity activeOpacity={0.8}>
+        <View style={[styles.button, styles.globalFilterButton]}>
+          <Text style={[styles.label, { color: colors.gray900 }]}>Filter</Text>
+          <Icons.Ionicons
+            name="filter"
+            size={16}
+            color={colors.gray900}
+            style={{ marginLeft: 6 }}
+          />
+        </View>
+      </TouchableOpacity>
+    </View>
+  );
+
     return (
       <Animated.View style={{ marginRight: spacing.sm }}>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => toggleFilter(item.id)}
-        >
+        <TouchableOpacity activeOpacity={0.8} onPress={() => toggleFilter(item.id)}>
           <Animated.View
             style={[
-              styles.pill,
-              { backgroundColor },
+              styles.button,
+              { backgroundColor, borderColor },
               { flexDirection: "row", alignItems: "center" },
             ]}
           >
@@ -95,12 +113,16 @@ const styles = StyleSheet.create({
     backgroundColor: colors.gray100,
   },
   listContent: {
-    paddingHorizontal: 0,
+    paddingVertical: spacing.md,
   },
-  pill: {
+  button: {
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: 20,
+    paddingVertical: spacing.xs + 2,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.gray300,
+    alignItems: "center",
+    justifyContent: "center",
   },
   label: {
     ...typography.small,

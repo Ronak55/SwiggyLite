@@ -39,13 +39,20 @@ export default function BannerCarousel() {
 
   return (
     <View style={styles.container}>
-      <Animated.FlatList
+     <Animated.FlatList
         ref={flatListRef}
         data={mockData.banners}
         keyExtractor={(item) => item.id}
         horizontal
         pagingEnabled
+        decelerationRate="fast"
+        snapToInterval={width}
+        snapToAlignment="start"
+        scrollEventThrottle={16}
+        removeClippedSubviews
+        style={{ width }}
         showsHorizontalScrollIndicator={false}
+        getItemLayout={(_, index) => ({ length: width, offset: width * index, index })}
         onMomentumScrollEnd={handleMomentumScrollEnd}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
@@ -57,6 +64,7 @@ export default function BannerCarousel() {
               source={{ uri: item.image }}
               style={styles.bannerImage}
               resizeMode="cover"
+              onError={() => {}}
             />
           </View>
         )}
@@ -104,9 +112,11 @@ export default function BannerCarousel() {
 const styles = StyleSheet.create({
   container: {
     marginTop: spacing.md,
+    marginLeft: -spacing.screenHorizontal,
+    marginRight: -spacing.screenHorizontal,
   },
   bannerWrapper: {
-    width: "100%",
+    width,
   },
   bannerImage: {
     width: "100%",

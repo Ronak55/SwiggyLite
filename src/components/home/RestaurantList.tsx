@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useMemo, useRef } from "react";
 import {
   View,
   Text,
@@ -10,10 +10,13 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { colors, typography, spacing } from "../../theme";
 
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 
-const CARD_HEIGHT = hp("15%");
-const IMAGE_WIDTH = wp("30%");
+const CARD_HEIGHT = hp("18%");
+const IMAGE_WIDTH = wp("32%");
 
 type RestaurantItemProps = {
   restaurant: {
@@ -50,34 +53,83 @@ export default function RestaurantList({ restaurant }: RestaurantItemProps) {
     }).start();
   };
 
+  const etaRange = useMemo(() => {
+    const start = Math.max(10, restaurant.etaMins - 10);
+    const end = Math.max(start + 5, restaurant.etaMins);
+    return `${start}-${end}`;
+  }, [restaurant.etaMins]);
+
+  const ratingCountK = useMemo(
+    () => `${Math.floor(Math.random() * 40) + 10}K+`,
+    []
+  );
+
   return (
     <TouchableWithoutFeedback onPressIn={onPressIn} onPressOut={onPressOut}>
-      <Animated.View style={[styles.card, { transform: [{ scale: scaleAnim }] }]}>
-        <Image
-          source={{ uri: restaurant.cover }}
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <View style={styles.content}>
-          <View style={styles.topRow}>
-            <Text style={styles.name} numberOfLines={1}>
-              {restaurant.name}
-            </Text>
-            <Ionicons name="ellipsis-vertical" size={18} color={colors.gray500} />
-          </View>
-          <Text style={styles.subInfo}>
-            {restaurant.rating} ({Math.floor(Math.random() * 1000) + 10}+) •{" "}
-            {restaurant.etaMins}-{restaurant.etaMins + 5} mins
-          </Text>
-          <View style={styles.cuisinesRow}>
-            {restaurant.vegOnly && <View style={styles.vegDot} />}
-            <Text style={styles.cuisines}>{restaurant.cuisines.join(", ")}</Text>
-          </View>
-          {restaurant.offer && (
-            <View style={styles.offerBadge}>
-              <Text style={styles.offerText}>{restaurant.offer}</Text>
+      <Animated.View
+        style={[styles.card, { transform: [{ scale: scaleAnim }] }]}
+      >
+         <View style={styles.imageWrapper}>
+          <Image
+            source={{ uri: restaurant.cover }}
+            style={styles.image}
+            resizeMode="cover"
+          />
+          {restaurant.offer ? (
+            <View style={styles.offerOverlay}>
+              <Text style={styles.offerOverlayText} numberOfLines={2}>
+                {restaurant.offer.toUpperCase()}
+              </Text>
             </View>
-          )}
+          ) : null}
+          <View style={styles.favButton}>
+            <Ionicons name="heart-outline" size={14} color={colors.gray700} />
+          </View>
+           </View>
+
+        <View style={styles.content}>
+          <View>
+            <View style={styles.badgeRow}>
+              <Ionicons
+                name={restaurant.promoted ? "trophy-outline" : "flash-outline"}
+                size={14}
+                color={restaurant.promoted ? colors.warning : colors.primary}
+              />
+              <Text style={styles.badgeText} numberOfLines={1}>
+                {restaurant.promoted
+                  ? `Best In ${restaurant.cuisines[0]}`
+                  : `Food in ${etaRange} min`}
+              </Text>
+            </View>
+
+            <View style={styles.topRow}>
+              <Text style={styles.name} numberOfLines={1}>
+                {restaurant.name}
+              </Text>
+              <Ionicons name="ellipsis-vertical" size={18} color={colors.gray500} />
+            </View>
+          </View>
+            <View>
+            <View style={styles.ratingRow}>
+              <View style={styles.ratingPill}>
+                <Ionicons name="star" size={10} color={colors.white} />
+                <Text style={styles.ratingText}>{restaurant.rating}</Text>
+              </View>
+              <Text style={styles.subInfo}>
+                {` (${ratingCountK}) • ${etaRange} mins`}
+              </Text>
+            </View>
+                <View style={styles.cuisinesRow}>
+              {restaurant.vegOnly && <View style={styles.vegDot} />}
+              <Text style={styles.cuisines} numberOfLines={1}>
+                {restaurant.cuisines.join(", ")}
+              </Text>
+            </View>
+
+            <Text style={styles.locality} numberOfLines={1}>
+              {`HSR Layout • ${restaurant.distanceKm} km`}
+            </Text>
+          </View>
         </View>
       </Animated.View>
     </TouchableWithoutFeedback>
@@ -89,26 +141,35 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginHorizontal: 0,
     marginVertical: spacing.sm,
-    backgroundColor: colors.white,
     borderRadius: 12,
     overflow: "hidden",
-    elevation: 3,
-    shadowColor: colors.black,
-    shadowOpacity: 0.12,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
     height: CARD_HEIGHT,
   },
-  image: {
+imageWrapper: {
     width: IMAGE_WIDTH,
     height: CARD_HEIGHT,
-    borderTopLeftRadius: 12,
-    borderBottomLeftRadius: 12,
+    borderRadius: 12,
+    overflow: "hidden",
+  },
+  image: {
+    width: "100%",
+    height: "100%",
+  },
+    badgeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: spacing.xs,
+  },
+  badgeText: {
+    ...typography.small,
+    fontWeight: "600",
+    marginLeft: spacing.xs,
+    color: colors.gray900,
   },
   content: {
     flex: 1,
     padding: spacing.sm,
-    justifyContent: "space-between",
+    justifyContent: "center",
   },
   topRow: {
     flexDirection: "row",
@@ -123,12 +184,32 @@ const styles = StyleSheet.create({
   subInfo: {
     ...typography.small,
     color: colors.gray700,
+    fontWeight: "600",
     marginTop: spacing.xs,
   },
   cuisinesRow: {
     flexDirection: "row",
     alignItems: "center",
     marginTop: spacing.xs / 2,
+  },
+  ratingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: spacing.xs,
+  },
+  ratingPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.success,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  ratingText: {
+    ...typography.small,
+    color: colors.white,
+    marginLeft: 4,
+    fontWeight: "600",
   },
   vegDot: {
     width: 8,
@@ -141,18 +222,40 @@ const styles = StyleSheet.create({
     ...typography.small,
     color: colors.gray500,
   },
-  offerBadge: {
-    marginTop: spacing.xs,
-    backgroundColor: "#FFF4E5",
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: 8,
-    alignSelf: "flex-start",
-    elevation: 1,
-  },
-  offerText: {
+  locality: {
     ...typography.small,
-    color: "#FF7A00",
-    fontWeight: "600",
+    color: colors.gray700,
+    marginTop: spacing.xs / 2,
+  },
+  offerOverlay: {
+    position: "absolute",
+    left: spacing.xs,
+    bottom: spacing.xs,
+    backgroundColor: "rgba(0,0,0,0.55)",
+    paddingHorizontal: spacing.sm,
+     paddingVertical: 4,
+    borderRadius: 6,
+    maxWidth: IMAGE_WIDTH - spacing.md,
+  },
+   offerOverlayText: {
+    ...typography.small,
+    color: colors.white,
+    fontWeight: "700",
+  },
+  favButton: {
+    position: "absolute",
+    top: spacing.xs,
+    right: spacing.xs,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: colors.white,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 2,
+    shadowColor: colors.black,
+    shadowOpacity: 0.12,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 2,
   },
 });
