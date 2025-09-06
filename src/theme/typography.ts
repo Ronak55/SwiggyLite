@@ -14,8 +14,12 @@ export const typography = {
     fontSize: RFPercentage(2),
     fontWeight: "400" as const,
   },
-  small: {
+  medium:{
     fontSize: RFPercentage(1.6),
+    fontWeight: "400" as const,
+  },
+  small: {
+    fontSize: RFPercentage(1.4),
     fontWeight: "400" as const,
   },
 };

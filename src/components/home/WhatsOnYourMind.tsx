@@ -5,7 +5,7 @@ import { mockData } from "../../data/mockData";
 import { colors, typography, spacing } from "../../theme";
 import { device } from "../../utils";
 
-const IMAGE_SIZE = device.width * 0.23;
+const IMAGE_SIZE = device.width * 0.18;
 
 export default function WhatsOnYourMind() {
   const renderItem = ({ item }: { item: (typeof mockData.whatsOnYourMind)[0] }) => (
@@ -40,7 +40,6 @@ export default function WhatsOnYourMind() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: spacing.md,
     backgroundColor: colors.gray100,
   },
   title: {

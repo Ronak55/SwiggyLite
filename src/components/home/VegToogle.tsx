@@ -1,71 +1,69 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from "react-native";
 import { colors, typography, spacing } from "../../theme";
+import {device} from "../../utils/device";
+
+const width = device.width * 0.4;
 
 export default function VegToggle() {
   const [selected, setSelected] = useState<"veg" | "nonveg">("veg");
-  const translateX = new Animated.Value(selected === "veg" ? 0 : 1);
+  const translateX = useRef(new Animated.Value(0)).current;
 
-  const handleToggle = (type: "veg" | "nonveg") => {
-    setSelected(type);
+  useEffect(() => {
     Animated.spring(translateX, {
-      toValue: type === "veg" ? 0 : 1,
+      toValue: selected === "veg" ? 0 : 1,
       useNativeDriver: false,
+      stiffness: 200,
+      damping: 20,
     }).start();
-  };
+  }, [selected]);
 
-  const renderDot = (color: string) => (
-    <View style={[styles.dot, { borderColor: color }]}>
-      <View style={[styles.dotInner, { backgroundColor: color }]} />
-    </View>
-  );
+  const toggleWidth = width;
+
+  const renderOption = (type: "veg" | "nonveg", color: string, label: string) => {
+    const isActive = selected === type;
+    return (
+      <TouchableOpacity
+        style={styles.option}
+        onPress={() => setSelected(type)}
+        activeOpacity={0.7}
+      >
+        <View style={[styles.dot, { borderColor: color }]}>
+          <View style={[styles.dotInner, { backgroundColor: color }]} />
+        </View>
+        <Animated.Text
+          style={[
+            styles.optionText,
+            { color: isActive ? colors.white : colors.gray700 },
+          ]}
+        >
+          {label}
+        </Animated.Text>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={styles.container}>
-      <View style={styles.toggleBackground}>
+      <View style={[styles.toggleBackground, { width: toggleWidth * 2 }]}>
         <Animated.View
           style={[
             styles.activePill,
             {
-              left: translateX.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, "50%"],
-              }),
+              width: toggleWidth,
+              transform: [
+                {
+                  translateX: translateX.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, toggleWidth],
+                  }),
+                },
+              ],
             },
           ]}
         />
-
-        {/* Veg Option */}
-        <TouchableOpacity
-          style={styles.option}
-          onPress={() => handleToggle("veg")}
-          activeOpacity={0.7}
-        >
-          {renderDot("#008000")}
-          <Text
-            style={[
-              styles.optionText,
-              selected === "veg" && styles.activeText,
-            ]}
-          >
-            Veg Only
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.option}
-          onPress={() => handleToggle("nonveg")}
-          activeOpacity={0.7}
-        >
-          {renderDot("#D32F2F")}
-          <Text
-            style={[
-              styles.optionText,
-              selected === "nonveg" && styles.activeText,
-            ]}
-          >
-            Non-Veg
-          </Text>
-        </TouchableOpacity>
+        {renderOption("veg", "#008000", "Veg Only")}
+        {renderOption("nonveg", "#D32F2F", "Non-Veg")}
       </View>
     </View>
   );
@@ -73,24 +71,27 @@ export default function VegToggle() {
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: spacing.md,
+    marginTop: spacing.md,
     alignItems: "center",
   },
   toggleBackground: {
     flexDirection: "row",
-    width: 220,
     backgroundColor: colors.gray100,
-    borderRadius: 30,
+    borderRadius: 50,
     overflow: "hidden",
-    position: "relative",
+    height: device.height * 0.05,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
   },
   activePill: {
     position: "absolute",
     top: 0,
     bottom: 0,
-    width: "50%",
     backgroundColor: colors.secondary,
-    borderRadius: 30,
+    borderRadius: 50,
   },
   option: {
     flex: 1,
@@ -103,10 +104,6 @@ const styles = StyleSheet.create({
     ...typography.small,
     fontWeight: "600",
     marginLeft: spacing.xs,
-    color: colors.gray700,
-  },
-  activeText: {
-    color: colors.white,
   },
   dot: {
     width: 14,

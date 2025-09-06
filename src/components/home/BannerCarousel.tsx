@@ -4,8 +4,8 @@ import {
   StyleSheet,
   Animated,
   Dimensions,
-  Image,
 } from "react-native";
+import { Image } from "expo-image";
 import { mockData } from "../../data/mockData";
 import { spacing, colors } from "../../theme";
 
@@ -39,7 +39,7 @@ export default function BannerCarousel() {
 
   return (
     <View style={styles.container}>
-     <Animated.FlatList
+      <Animated.FlatList
         ref={flatListRef}
         data={mockData.banners}
         keyExtractor={(item) => item.id}
@@ -61,10 +61,10 @@ export default function BannerCarousel() {
         renderItem={({ item }) => (
           <View style={styles.bannerWrapper}>
             <Image
-              source={{ uri: item.image }}
+              source={item.image}
               style={styles.bannerImage}
-              resizeMode="cover"
-              onError={() => {}}
+              contentFit="cover" 
+              cachePolicy="disk"
             />
           </View>
         )}
@@ -121,7 +121,6 @@ const styles = StyleSheet.create({
   bannerImage: {
     width: "100%",
     height: BANNER_HEIGHT,
-    borderRadius: 12,
     backgroundColor: colors.gray100,
   },
   indicatorContainer: {
@@ -132,7 +131,7 @@ const styles = StyleSheet.create({
   indicatorDot: {
     height: 8,
     borderRadius: 4,
-    backgroundColor: colors.secondary,
+    backgroundColor: colors.primary,
     marginHorizontal: 4,
   },
 });

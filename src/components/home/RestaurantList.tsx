@@ -5,9 +5,9 @@ import {
   StyleSheet,
   Animated,
   TouchableWithoutFeedback,
-  Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { Image } from "expo-image";
 import { colors, typography, spacing } from "../../theme";
 
 import {
@@ -69,11 +69,12 @@ export default function RestaurantList({ restaurant }: RestaurantItemProps) {
       <Animated.View
         style={[styles.card, { transform: [{ scale: scaleAnim }] }]}
       >
-         <View style={styles.imageWrapper}>
+        <View style={styles.imageWrapper}>
           <Image
-            source={{ uri: restaurant.cover }}
+            source={restaurant.cover}
             style={styles.image}
-            resizeMode="cover"
+            contentFit="cover"
+            cachePolicy="memory-disk"
           />
           {restaurant.offer ? (
             <View style={styles.offerOverlay}>
@@ -85,7 +86,7 @@ export default function RestaurantList({ restaurant }: RestaurantItemProps) {
           <View style={styles.favButton}>
             <Ionicons name="heart-outline" size={14} color={colors.gray700} />
           </View>
-           </View>
+        </View>
 
         <View style={styles.content}>
           <View>
@@ -106,10 +107,15 @@ export default function RestaurantList({ restaurant }: RestaurantItemProps) {
               <Text style={styles.name} numberOfLines={1}>
                 {restaurant.name}
               </Text>
-              <Ionicons name="ellipsis-vertical" size={18} color={colors.gray500} />
+              <Ionicons
+                name="ellipsis-vertical"
+                size={18}
+                color={colors.gray500}
+              />
             </View>
           </View>
-            <View>
+
+          <View>
             <View style={styles.ratingRow}>
               <View style={styles.ratingPill}>
                 <Ionicons name="star" size={10} color={colors.white} />
@@ -119,7 +125,8 @@ export default function RestaurantList({ restaurant }: RestaurantItemProps) {
                 {` (${ratingCountK}) • ${etaRange} mins`}
               </Text>
             </View>
-                <View style={styles.cuisinesRow}>
+
+            <View style={styles.cuisinesRow}>
               {restaurant.vegOnly && <View style={styles.vegDot} />}
               <Text style={styles.cuisines} numberOfLines={1}>
                 {restaurant.cuisines.join(", ")}

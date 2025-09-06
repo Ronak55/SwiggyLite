@@ -16,7 +16,7 @@ export default function FiltersBar() {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const animatedValues = useRef<Record<string, Animated.Value>>({}).current;
 
-  mockData.filters.forEach(f => {
+  mockData.filters.forEach((f) => {
     if (!animatedValues[f.id]) animatedValues[f.id] = new Animated.Value(0);
   });
 
@@ -29,12 +29,12 @@ export default function FiltersBar() {
       useNativeDriver: false,
     }).start();
 
-    setSelectedFilters(prev =>
-      isSelected ? prev.filter(f => f !== id) : [...prev, id]
+    setSelectedFilters((prev) =>
+      isSelected ? prev.filter((f) => f !== id) : [...prev, id]
     );
   };
 
-  const renderItem = ({ item }: { item: typeof mockData.filters[0] }) => {
+  const renderItem = ({ item }: { item: (typeof mockData.filters)[0] }) => {
     const isSelected = selectedFilters.includes(item.id);
 
     const backgroundColor = animatedValues[item.id].interpolate({
@@ -50,25 +50,12 @@ export default function FiltersBar() {
       outputRange: [colors.gray900, colors.white],
     });
 
-    const renderFilterButton = () => (
-    <View style={{ marginRight: spacing.sm }}>
-      <TouchableOpacity activeOpacity={0.8}>
-        <View style={[styles.button, styles.globalFilterButton]}>
-          <Text style={[styles.label, { color: colors.gray900 }]}>Filter</Text>
-          <Icons.Ionicons
-            name="filter"
-            size={16}
-            color={colors.gray900}
-            style={{ marginLeft: 6 }}
-          />
-        </View>
-      </TouchableOpacity>
-    </View>
-  );
-
     return (
       <Animated.View style={{ marginRight: spacing.sm }}>
-        <TouchableOpacity activeOpacity={0.8} onPress={() => toggleFilter(item.id)}>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => toggleFilter(item.id)}
+        >
           <Animated.View
             style={[
               styles.button,
@@ -79,6 +66,14 @@ export default function FiltersBar() {
             <Animated.Text style={[styles.label, { color: textColor }]}>
               {item.label}
             </Animated.Text>
+            {item.label.toLowerCase() === "filter" && (
+              <Icons.Ionicons
+                name="filter"
+                size={16}
+                color={isSelected ? colors.white : colors.gray700}
+                style={{ marginLeft: 4 }}
+              />
+            )}
             {isSelected && (
               <Icons.Ionicons
                 name="close"
@@ -100,7 +95,7 @@ export default function FiltersBar() {
         horizontal
         showsHorizontalScrollIndicator={false}
         renderItem={renderItem}
-        keyExtractor={item => item.id}
+        keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
       />
     </View>
